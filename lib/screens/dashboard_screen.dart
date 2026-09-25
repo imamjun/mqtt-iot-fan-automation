@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import '../controllers/dashboard_controller.dart';
 import '../widgets/sensor_card.dart';
-import '../widgets/trend_chart.dart';
+import '../widgets/trend_chart.dart'; // Pastikan import sudah benar
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -32,7 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         
         return Scaffold(
           appBar: AppBar(
-            title: const Text('ESP32 Dashboard'),
+            title: const Text('ESP32 Dashboard (OOP)'),
             actions: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -87,12 +87,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   foregroundColor: Colors.white,
                                 ),
                                 onPressed: _controller.isConnecting
-                                    ? null // Disable tombol saat sedang loading
+                                    ? null
                                     : () {
                                         if (_controller.isConnected) {
                                           _controller.disconnect();
                                         } else {
-                                          // Pastikan inputan tidak kosong
                                           if (_serverController.text.trim().isNotEmpty) {
                                             _controller.connect(_serverController.text.trim());
                                           }
@@ -111,7 +110,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Hanya tampilkan data jika sudah terhubung (Opsional, agar UI terlihat bersih)
                 if (_controller.isConnected) ...[
                   // 1. Kartu Sensor
                   Row(
@@ -128,11 +126,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // 2. Grafik
-                  TrendChart(tempSpots: _controller.tempSpots, humSpots: _controller.humSpots),
+                  // 2. GRAFIK SUHU TERPISAH
+                  TrendChart(
+                    title: "Grafik Tren Suhu Ruangan",
+                    spots: _controller.tempSpots,
+                    lineColor: Colors.orange,
+                    unit: "°C",
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 3. GRAFIK KELEMBAPAN TERPISAH
+                  TrendChart(
+                    title: "Grafik Tren Kelembapan Ruangan",
+                    spots: _controller.humSpots,
+                    lineColor: Colors.blue,
+                    unit: "%",
+                  ),
                   const SizedBox(height: 20),
 
-                  // 3. Kontrol Mode
+                  // 4. Kontrol Mode
                   Card(
                     elevation: 3,
                     child: Padding(
@@ -157,7 +169,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // 4. Panel Dinamis (AUTO/MANUAL)
+                  // 5. Panel Dinamis (AUTO/MANUAL)
                   if (data.mode == "AUTO")
                     Card(
                       elevation: 3,
@@ -201,7 +213,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                 ] else ...[
-                  // Jika belum connect, tampilkan pesan informatif
                   const Center(
                     child: Padding(
                       padding: EdgeInsets.only(top: 50.0),
